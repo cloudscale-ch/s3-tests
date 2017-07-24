@@ -2971,6 +2971,7 @@ def test_bucket_create_naming_bad_ip():
 
 
 # Breaks DNS with SubdomainCallingFormat
+@tag('fails_on_cloudscale_aws4')
 @attr('fails_with_subdomain')
 @attr(resource='bucket')
 @attr(method='put')
