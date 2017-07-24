@@ -1,0 +1,15 @@
+#!/bin/sh
+
+export REQUESTS_CA_BUNDLE="/etc/ssl/certs/ca-certificates.crt"
+export S3TEST_CONF="$1"
+shift
+
+common_tags='!fails_on_rgw,!kms,!tenants,!fails_strict_rfc2616,!lifecycle_expiration'
+echo
+echo "Running tests with AWS v2 signature algorithm:"
+nosetests -a "$common_tags" $*
+
+export S3_USE_SIGV4=1
+echo
+echo "Running tests with AWS v4 signature algorithm:"
+nosetests -a "$common_tags,!auth_aws2,!fails_on_cloudscale_aws4,!aws4_boto_header_ordering_bug" $*
