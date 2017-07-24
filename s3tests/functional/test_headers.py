@@ -326,6 +326,7 @@ def test_object_create_bad_contentlength_negative():
 
 
 @tag('auth_common')
+@tag('fails_on_cloudscale_aws4')
 @attr(resource='object')
 @attr(method='put')
 @attr(operation='create w/no content length')
@@ -1202,6 +1203,7 @@ def test_object_create_bad_amz_date_empty_aws4():
 
 
 @tag('auth_aws4')
+@tag('fails_on_cloudscale_aws4')
 @attr(resource='object')
 @attr(method='put')
 @attr(operation='create w/non-graphic date')
@@ -1526,6 +1528,7 @@ def test_bucket_create_bad_amz_date_empty_aws4():
 
 
 @tag('auth_aws4')
+@tag('fails_on_cloudscale_aws4')
 @attr(resource='bucket')
 @attr(method='put')
 @attr(operation='create w/non-graphic date')

@@ -4001,6 +4001,7 @@ def _get_acl_header(user=None, perms=None):
 
     return headers
 
+@tag('fails_on_cloudscale_aws4')
 @attr(resource='object')
 @attr(method='PUT')
 @attr(operation='add all grants to user through headers')
@@ -4060,6 +4061,7 @@ def test_object_header_acl_grants():
         )
 
 
+@tag('fails_on_cloudscale_aws4')
 @attr(resource='bucket')
 @attr(method='PUT')
 @attr(operation='add all grants to user through headers')
