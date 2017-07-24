@@ -1,0 +1,14 @@
+#!/bin/sh
+
+export REQUESTS_CA_BUNDLE="/etc/ssl/certs/ca-certificates.crt"
+export S3TEST_CONF="$1"
+shift
+echo
+echo "Running tests with AWS v2 signature algorithm:"
+./virtualenv/bin/nosetests -a '!fails_on_rgw' $*
+
+export S3_USE_SIGV4=1
+echo
+echo "Running tests with AWS v4 signature algorithm:"
+./virtualenv/bin/nosetests -a '!fails_on_rgw,!auth_aws2,!fails_on_cloudscale_aws4' $*
+
