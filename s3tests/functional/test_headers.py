@@ -13,6 +13,7 @@ import socket
 import ssl
 import os
 import re
+from datetime import datetime
 from email.utils import formatdate
 
 from urlparse import urlparse
@@ -167,6 +168,18 @@ def _setup_bad_object(headers=None, remove=None):
 
     _add_custom_headers(headers=headers, remove=remove)
     return bucket.new_key('foo')
+
+
+def _x_amz_date():
+    """ The AWS sigv2 and sigv4 algorithms use different date formats. For sigv2
+    the date must be formated according to RFC 2616, for sigv4 it must be in
+    ISO 8601 format.
+    """
+    if 'S3_USE_SIGV4' in os.environ:
+        return datetime.utcnow().strftime('%Y%m%dT%H%M%SZ')
+    else:
+        return formatdate(usegmt=True)
+
 
 def tag(*tags):
     def wrap(func):
@@ -477,7 +490,7 @@ def test_object_create_bad_authorization_empty():
 @attr(assertion='succeeds')
 @nose.with_setup(teardown=_clear_custom_headers)
 def test_object_create_date_and_amz_date():
-    date = formatdate(usegmt=True)
+    date = _x_amz_date()
     key = _setup_bad_object({'Date': date, 'X-Amz-Date': date})
     key.set_contents_from_string('bar')
 
@@ -488,7 +501,7 @@ def test_object_create_date_and_amz_date():
 @attr(assertion='succeeds')
 @nose.with_setup(teardown=_clear_custom_headers)
 def test_object_create_amz_date_and_no_date():
-    date = formatdate(usegmt=True)
+    date = _x_amz_date()
     key = _setup_bad_object({'X-Amz-Date': date}, ('Date',))
     key.set_contents_from_string('bar')
 
