@@ -10354,6 +10354,7 @@ def test_encryption_sse_c_post_object_authenticated_request():
 
 @attr(assertion='success')
 @attr('encryption')
+@attr('kms')
 def _test_sse_kms_customer_write(file_size, key_id = 'testkey-1'):
     """
     Tests Create a file of A's, use it to set_contents_from_file.
@@ -10386,6 +10387,7 @@ def _test_sse_kms_customer_write(file_size, key_id = 'testkey-1'):
 @attr(operation='Test SSE-KMS encrypted does perform head properly')
 @attr(assertion='success')
 @attr('encryption')
+@attr('kms')
 def test_sse_kms_method_head():
     kms_keyid = get_main_kms_keyid()
     bucket_name = get_new_bucket()
@@ -10416,6 +10418,7 @@ def test_sse_kms_method_head():
 @attr(operation='write encrypted with SSE-KMS and read without SSE-KMS')
 @attr(assertion='operation success')
 @attr('encryption')
+@attr('kms')
 def test_sse_kms_present():
     kms_keyid = get_main_kms_keyid()
     bucket_name = get_new_bucket()
@@ -10440,6 +10443,7 @@ def test_sse_kms_present():
 @attr(operation='declare SSE-KMS but do not provide key_id')
 @attr(assertion='operation fails')
 @attr('encryption')
+@attr('kms')
 def test_sse_kms_no_key():
     bucket_name = get_new_bucket()
     client = get_client()
@@ -10460,6 +10464,7 @@ def test_sse_kms_no_key():
 @attr(operation='Do not declare SSE-KMS but provide key_id')
 @attr(assertion='operation successfull, no encryption')
 @attr('encryption')
+@attr('kms')
 def test_sse_kms_not_declared():
     bucket_name = get_new_bucket()
     client = get_client()
@@ -10481,6 +10486,7 @@ def test_sse_kms_not_declared():
 @attr(operation='complete KMS multi-part upload')
 @attr(assertion='successful')
 @attr('encryption')
+@attr('kms')
 def test_sse_kms_multipart_upload():
     kms_keyid = get_main_kms_keyid()
     bucket_name = get_new_bucket()
@@ -10531,6 +10537,7 @@ def test_sse_kms_multipart_upload():
 @attr(operation='multipart KMS upload with bad key_id for uploading chunks')
 @attr(assertion='successful')
 @attr('encryption')
+@attr('kms')
 def test_sse_kms_multipart_invalid_chunks_1():
     kms_keyid = get_main_kms_keyid()
     kms_keyid2 = get_secondary_kms_keyid()
@@ -10561,6 +10568,7 @@ def test_sse_kms_multipart_invalid_chunks_1():
 @attr(operation='multipart KMS upload with unexistent key_id for chunks')
 @attr(assertion='successful')
 @attr('encryption')
+@attr('kms')
 def test_sse_kms_multipart_invalid_chunks_2():
     kms_keyid = get_main_kms_keyid()
     bucket_name = get_new_bucket()
@@ -10590,6 +10598,7 @@ def test_sse_kms_multipart_invalid_chunks_2():
 @attr(operation='authenticated KMS browser based upload via POST request')
 @attr(assertion='succeeds and returns written data')
 @attr('encryption')
+@attr('kms')
 def test_sse_kms_post_object_authenticated_request():
     kms_keyid = get_main_kms_keyid()
     bucket_name = get_new_bucket()
@@ -10639,6 +10648,7 @@ def test_sse_kms_post_object_authenticated_request():
 @attr(operation='Test SSE-KMS encrypted transfer 1 byte')
 @attr(assertion='success')
 @attr('encryption')
+@attr('kms')
 def test_sse_kms_transfer_1b():
     kms_keyid = get_main_kms_keyid()
     if kms_keyid is None:
@@ -10651,6 +10661,7 @@ def test_sse_kms_transfer_1b():
 @attr(operation='Test SSE-KMS encrypted transfer 1KB')
 @attr(assertion='success')
 @attr('encryption')
+@attr('kms')
 def test_sse_kms_transfer_1kb():
     kms_keyid = get_main_kms_keyid()
     if kms_keyid is None:
@@ -10663,6 +10674,7 @@ def test_sse_kms_transfer_1kb():
 @attr(operation='Test SSE-KMS encrypted transfer 1MB')
 @attr(assertion='success')
 @attr('encryption')
+@attr('kms')
 def test_sse_kms_transfer_1MB():
     kms_keyid = get_main_kms_keyid()
     if kms_keyid is None:
@@ -10675,6 +10687,7 @@ def test_sse_kms_transfer_1MB():
 @attr(operation='Test SSE-KMS encrypted transfer 13 bytes')
 @attr(assertion='success')
 @attr('encryption')
+@attr('kms')
 def test_sse_kms_transfer_13b():
     kms_keyid = get_main_kms_keyid()
     if kms_keyid is None:
@@ -10687,6 +10700,7 @@ def test_sse_kms_transfer_13b():
 @attr(operation='write encrypted with SSE-KMS and read with SSE-KMS')
 @attr(assertion='operation fails')
 @attr('encryption')
+@attr('kms')
 def test_sse_kms_read_declare():
     bucket_name = get_new_bucket()
     client = get_client()
