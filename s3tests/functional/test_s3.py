@@ -629,6 +629,7 @@ def _multipart_upload_enc(bucket, s3_key_name, size, part_size=5*1024*1024,
 
 @pytest.mark.encryption
 @pytest.mark.fails_on_dbstore
+@pytest.mark.aws4_boto_header_ordering_bug
 def test_encryption_sse_c_multipart_invalid_chunks_1():
     bucket = get_new_bucket()
     key = "multipart_enc"
@@ -653,6 +654,7 @@ def test_encryption_sse_c_multipart_invalid_chunks_1():
 
 @pytest.mark.encryption
 @pytest.mark.fails_on_dbstore
+@pytest.mark.aws4_boto_header_ordering_bug
 def test_encryption_sse_c_multipart_invalid_chunks_2():
     bucket = get_new_bucket()
     key = "multipart_enc"
