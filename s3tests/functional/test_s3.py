@@ -10107,6 +10107,7 @@ def test_encryption_sse_c_post_object_authenticated_request():
     assert body == 'bar'
 
 @pytest.mark.encryption
+@pytest.mark.kms
 @pytest.mark.fails_on_dbstore
 def _test_sse_kms_customer_write(file_size, key_id = 'testkey-1'):
     """
@@ -10136,6 +10137,7 @@ def _test_sse_kms_customer_write(file_size, key_id = 'testkey-1'):
 
 
 @pytest.mark.encryption
+@pytest.mark.kms
 @pytest.mark.fails_on_dbstore
 def test_sse_kms_method_head():
     kms_keyid = get_main_kms_keyid()
@@ -10163,6 +10165,7 @@ def test_sse_kms_method_head():
     assert status == 400
 
 @pytest.mark.encryption
+@pytest.mark.kms
 @pytest.mark.fails_on_dbstore
 def test_sse_kms_present():
     kms_keyid = get_main_kms_keyid()
@@ -10184,6 +10187,7 @@ def test_sse_kms_present():
     assert body == data
 
 @pytest.mark.encryption
+@pytest.mark.kms
 def test_sse_kms_no_key():
     bucket_name = get_new_bucket()
     client = get_client()
@@ -10200,6 +10204,7 @@ def test_sse_kms_no_key():
 
 
 @pytest.mark.encryption
+@pytest.mark.kms
 def test_sse_kms_not_declared():
     bucket_name = get_new_bucket()
     client = get_client()
@@ -10217,6 +10222,7 @@ def test_sse_kms_not_declared():
     assert status == 400
 
 @pytest.mark.encryption
+@pytest.mark.kms
 @pytest.mark.fails_on_dbstore
 def test_sse_kms_multipart_upload():
     kms_keyid = get_main_kms_keyid()
@@ -10262,6 +10268,7 @@ def test_sse_kms_multipart_upload():
 
 
 @pytest.mark.encryption
+@pytest.mark.kms
 @pytest.mark.fails_on_dbstore
 def test_sse_kms_multipart_invalid_chunks_1():
     kms_keyid = get_main_kms_keyid()
@@ -10289,6 +10296,7 @@ def test_sse_kms_multipart_invalid_chunks_1():
 
 
 @pytest.mark.encryption
+@pytest.mark.kms
 @pytest.mark.fails_on_dbstore
 def test_sse_kms_multipart_invalid_chunks_2():
     kms_keyid = get_main_kms_keyid()
@@ -10315,6 +10323,7 @@ def test_sse_kms_multipart_invalid_chunks_2():
 
 
 @pytest.mark.encryption
+@pytest.mark.kms
 @pytest.mark.fails_on_dbstore
 def test_sse_kms_post_object_authenticated_request():
     kms_keyid = get_main_kms_keyid()
@@ -10361,6 +10370,7 @@ def test_sse_kms_post_object_authenticated_request():
     assert body == 'bar'
 
 @pytest.mark.encryption
+@pytest.mark.kms
 @pytest.mark.fails_on_dbstore
 def test_sse_kms_transfer_1b():
     kms_keyid = get_main_kms_keyid()
@@ -10370,6 +10380,7 @@ def test_sse_kms_transfer_1b():
 
 
 @pytest.mark.encryption
+@pytest.mark.kms
 @pytest.mark.fails_on_dbstore
 def test_sse_kms_transfer_1kb():
     kms_keyid = get_main_kms_keyid()
@@ -10379,6 +10390,7 @@ def test_sse_kms_transfer_1kb():
 
 
 @pytest.mark.encryption
+@pytest.mark.kms
 @pytest.mark.fails_on_dbstore
 def test_sse_kms_transfer_1MB():
     kms_keyid = get_main_kms_keyid()
@@ -10388,6 +10400,7 @@ def test_sse_kms_transfer_1MB():
 
 
 @pytest.mark.encryption
+@pytest.mark.kms
 @pytest.mark.fails_on_dbstore
 def test_sse_kms_transfer_13b():
     kms_keyid = get_main_kms_keyid()
@@ -10397,6 +10410,7 @@ def test_sse_kms_transfer_13b():
 
 
 @pytest.mark.encryption
+@pytest.mark.kms
 def test_sse_kms_read_declare():
     bucket_name = get_new_bucket()
     client = get_client()
@@ -11615,6 +11629,7 @@ def test_put_obj_enc_conflict_c_s3():
     assert error_code == 'InvalidArgument'
 
 @pytest.mark.encryption
+@pytest.mark.kms
 def test_put_obj_enc_conflict_c_kms():
     kms_keyid = get_main_kms_keyid()
     if kms_keyid is None:
@@ -11642,6 +11657,7 @@ def test_put_obj_enc_conflict_c_kms():
     assert error_code == 'InvalidArgument'
 
 @pytest.mark.encryption
+@pytest.mark.kms
 def test_put_obj_enc_conflict_s3_kms():
     kms_keyid = get_main_kms_keyid()
     if kms_keyid is None:
@@ -11666,6 +11682,7 @@ def test_put_obj_enc_conflict_s3_kms():
     assert error_code == 'InvalidArgument'
 
 @pytest.mark.encryption
+@pytest.mark.kms
 def test_put_obj_enc_conflict_bad_enc_kms():
     kms_keyid = get_main_kms_keyid()
     if kms_keyid is None:
@@ -11743,6 +11760,7 @@ def test_bucket_policy_put_obj_s3_noenc():
     check_access_denied(client.put_object, Bucket=bucket_name, Key=key1_str, Body=key1_str)
 
 @pytest.mark.encryption
+@pytest.mark.kms
 @pytest.mark.bucket_policy
 @pytest.mark.sse_s3
 def test_bucket_policy_put_obj_s3_kms():
@@ -11789,6 +11807,7 @@ def test_bucket_policy_put_obj_s3_kms():
     check_access_denied(client.put_object, Bucket=bucket_name, Key=key1_str, Body=key1_str)
 
 @pytest.mark.encryption
+@pytest.mark.kms
 @pytest.mark.fails_on_dbstore
 @pytest.mark.bucket_policy
 def test_bucket_policy_put_obj_kms_noenc():
@@ -11837,6 +11856,7 @@ def test_bucket_policy_put_obj_kms_noenc():
 
 @pytest.mark.encryption
 @pytest.mark.bucket_policy
+@pytest.mark.kms
 def test_bucket_policy_put_obj_kms_s3():
     bucket_name = get_new_bucket()
     client = get_v2_client()
@@ -13084,6 +13104,7 @@ def test_put_bucket_encryption_s3():
     _put_bucket_encryption_s3(client, bucket_name)
 
 @pytest.mark.encryption
+@pytest.mark.kms
 def test_put_bucket_encryption_kms():
     bucket_name = get_new_bucket()
     client = get_client()
@@ -13111,6 +13132,7 @@ def test_get_bucket_encryption_s3():
 
 
 @pytest.mark.encryption
+@pytest.mark.kms
 def test_get_bucket_encryption_kms():
     kms_keyid = get_main_kms_keyid()
     if kms_keyid is None:
@@ -13157,6 +13179,7 @@ def test_delete_bucket_encryption_s3():
 
 
 @pytest.mark.encryption
+@pytest.mark.kms
 def test_delete_bucket_encryption_kms():
     bucket_name = get_new_bucket()
     client = get_client()
@@ -13197,6 +13220,7 @@ def _test_sse_s3_default_upload(file_size):
     assert body == data
 
 @pytest.mark.encryption
+@pytest.mark.kms
 @pytest.mark.bucket_encryption
 @pytest.mark.sse_s3
 @pytest.mark.fails_on_dbstore
@@ -13256,6 +13280,7 @@ def test_sse_kms_default_upload_1b():
     _test_sse_kms_default_upload(1)
 
 @pytest.mark.encryption
+@pytest.mark.kms
 @pytest.mark.bucket_encryption
 @pytest.mark.sse_s3
 @pytest.mark.fails_on_dbstore
@@ -13263,6 +13288,7 @@ def test_sse_kms_default_upload_1kb():
     _test_sse_kms_default_upload(1024)
 
 @pytest.mark.encryption
+@pytest.mark.kms
 @pytest.mark.bucket_encryption
 @pytest.mark.sse_s3
 @pytest.mark.fails_on_dbstore
@@ -13270,6 +13296,7 @@ def test_sse_kms_default_upload_1mb():
     _test_sse_kms_default_upload(1024*1024)
 
 @pytest.mark.encryption
+@pytest.mark.kms
 @pytest.mark.bucket_encryption
 @pytest.mark.sse_s3
 @pytest.mark.fails_on_dbstore
@@ -13396,6 +13423,7 @@ def test_sse_s3_default_post_object_authenticated_request():
     assert body == 'bar'
 
 @pytest.mark.encryption
+@pytest.mark.kms
 @pytest.mark.bucket_encryption
 @pytest.mark.fails_on_dbstore
 def test_sse_kms_default_post_object_authenticated_request():
