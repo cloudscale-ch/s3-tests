@@ -901,6 +901,7 @@ def _multipart_upload_enc(bucket, s3_key_name, size, part_size=5*1024*1024,
 @attr(operation='multipart upload with bad key for uploading chunks')
 @attr(assertion='successful')
 @attr('encryption')
+@attr('aws4_boto_header_ordering_bug')
 def test_encryption_sse_c_multipart_invalid_chunks_1():
     bucket = get_new_bucket()
     key = "multipart_enc"
@@ -928,6 +929,7 @@ def test_encryption_sse_c_multipart_invalid_chunks_1():
 @attr(operation='multipart upload with bad md5 for chunks')
 @attr(assertion='successful')
 @attr('encryption')
+@attr('aws4_boto_header_ordering_bug')
 def test_encryption_sse_c_multipart_invalid_chunks_2():
     bucket = get_new_bucket()
     key = "multipart_enc"
@@ -1034,6 +1036,7 @@ def _make_arn_resource(path="*"):
 @attr(assertion='success')
 @attr('encryption')
 @attr('bucket-policy')
+@attr('aws4_boto_header_ordering_bug')
 def test_bucket_policy_put_obj_enc():
 
     bucket = get_new_bucket()
