@@ -958,6 +958,7 @@ def test_encryption_sse_c_multipart_invalid_chunks_2():
 @attr(assertion='succeeds')
 @attr('fails_with_subdomain')
 @attr('bucket-policy')
+@attr('tenants')
 def test_bucket_policy_different_tenant():
     bucket = get_new_bucket()
     key = bucket.new_key('asdf')
