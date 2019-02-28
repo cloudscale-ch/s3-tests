@@ -671,6 +671,7 @@ def test_encryption_sse_c_multipart_invalid_chunks_2():
 @pytest.mark.fails_with_subdomain
 @pytest.mark.bucket_policy
 @pytest.mark.fails_on_dbstore
+@pytest.mark.tenants
 def test_bucket_policy_different_tenant():
     bucket = get_new_bucket()
     key = bucket.new_key('asdf')
