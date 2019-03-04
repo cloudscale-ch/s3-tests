@@ -4,7 +4,7 @@ export REQUESTS_CA_BUNDLE="/etc/ssl/certs/ca-certificates.crt"
 export S3TEST_CONF="$1"
 shift
 
-common_tags='!fails_on_rgw,!kms,!tenants,!fails_strict_rfc2616,!lifecycle_expiration'
+common_tags='!fails_on_rgw,!kms,!tenants,!fails_strict_rfc2616,!lifecycle_expiration,!fails_on_cloudscale'
 echo
 echo "Running tests with AWS v2 signature algorithm:"
 nosetests -a "$common_tags" $*
