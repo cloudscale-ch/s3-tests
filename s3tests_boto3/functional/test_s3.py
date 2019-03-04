@@ -4723,6 +4723,7 @@ def test_bucket_header_acl_grants():
 # would violate the uniqueness requirement of a user's email. As such, DHO users are
 # created without an email.
 @pytest.mark.fails_on_aws
+@pytest.mark.fails_on_cloudscale
 def test_bucket_acl_grant_email():
     bucket_name = get_new_bucket()
     client = get_client()
