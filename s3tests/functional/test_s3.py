@@ -4508,6 +4508,7 @@ def test_bucket_header_acl_grants():
 @attr(operation='add second FULL_CONTROL user')
 @attr(assertion='works for S3, fails for DHO')
 @attr('fails_on_aws') #  <Error><Code>AmbiguousGrantByEmailAddress</Code><Message>The e-mail address you provided is associated with more than one account. Please retry your request using a different identification method or after resolving the ambiguity.</Message>
+@attr('fails_on_cloudscale') # cloudscale does not support setting an email address for an account
 def test_bucket_acl_grant_email():
     bucket = get_new_bucket()
     # add alt user
