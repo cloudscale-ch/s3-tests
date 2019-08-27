@@ -81,7 +81,7 @@ def _create_keys(bucket=None, keys=[]):
 
 
 def _get_alt_connection():
-    return boto.s3.connection.S3Connection(
+    conn = boto.s3.connection.S3Connection(
         aws_access_key_id=s3['alt'].aws_access_key_id,
         aws_secret_access_key=s3['alt'].aws_secret_access_key,
         is_secure=s3['alt'].is_secure,
@@ -89,7 +89,8 @@ def _get_alt_connection():
         host=s3['alt'].host,
         calling_format=s3['alt'].calling_format,
     )
-
+    conn.auth_region_name=s3['alt'].auth_region_name
+    return conn
 
 # Breaks DNS with SubdomainCallingFormat
 @pytest.mark.fails_with_subdomain
