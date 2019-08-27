@@ -165,7 +165,7 @@ def _get_keys_prefixes(li):
     return (keys, prefixes)
 
 def _get_alt_connection():
-    return boto.s3.connection.S3Connection(
+    conn =  boto.s3.connection.S3Connection(
         aws_access_key_id=s3['alt'].aws_access_key_id,
         aws_secret_access_key=s3['alt'].aws_secret_access_key,
         is_secure=s3['alt'].is_secure,
@@ -173,6 +173,8 @@ def _get_alt_connection():
         host=s3['alt'].host,
         calling_format=s3['alt'].calling_format,
     )
+    conn.auth_region_name=s3['alt'].auth_region_name
+    return conn
 
 @attr(resource='bucket')
 @attr(method='get')
@@ -4813,6 +4815,7 @@ def _create_connection_bad_auth(aws_access_key_id='badauth'):
         host=main.host,
         calling_format=main.calling_format,
         )
+    conn.auth_region_name=main.auth_region_name
     return conn
 
 @attr(resource='bucket')
@@ -6093,6 +6096,7 @@ def _test_atomic_read(file_size):
         host=s3['main'].host,
         calling_format=s3['main'].calling_format,
         )
+    read_conn.auth_region_name = s3['main'].auth_region_name
 
     read_bucket = read_conn.get_bucket(bucket.name)
     read_key = read_bucket.get_key('testobj')
@@ -8868,6 +8872,7 @@ def test_bucket_policy():
         host=s3['alt'].host,
         calling_format=s3['alt'].calling_format,
         )
+    new_conn.auth_region_name = s3['alt'].auth_region_name
     b = new_conn.get_bucket(bucket.name)
     b.get_all_keys()
 
@@ -8907,6 +8912,7 @@ def test_bucket_policy_acl():
         host=s3['alt'].host,
         calling_format=s3['alt'].calling_format,
         )
+    new_conn.auth_region_name = s3['alt'].auth_region_name
     e = assert_raises(boto.exception.S3ResponseError, new_conn.get_bucket, bucket.name)
     eq(e.status, 403)
     eq(e.reason, 'Forbidden')
@@ -8948,6 +8954,7 @@ def test_bucket_policy_different_tenant():
         host=s3['tenant'].host,
         calling_format=s3['tenant'].calling_format,
         )
+    new_conn.auth_region_name = s3['tenant'].auth_region_name
     bucket_name = ":" + bucket.name
     b = new_conn.get_bucket(bucket_name)
     b.get_all_keys()
@@ -8991,6 +8998,7 @@ def test_bucket_policy_another_bucket():
         host=s3['alt'].host,
         calling_format=s3['alt'].calling_format,
         )
+    new_conn.auth_region_name = s3['alt'].auth_region_name
     b1 = new_conn.get_bucket(bucket1.name)
     b1.get_all_keys()
 
