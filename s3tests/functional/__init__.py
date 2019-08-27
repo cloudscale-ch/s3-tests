@@ -342,6 +342,7 @@ def setup():
                 # TODO test vhost calling format
                 calling_format=conf.calling_format,
                 )
+            conn.auth_region_name=conf.api_name
 
             temp_targetConn = TargetConnection(conf, conn)
             targets[name].add(k, temp_targetConn)
