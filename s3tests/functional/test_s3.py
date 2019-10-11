@@ -4316,6 +4316,7 @@ def test_bucket_acl_grant_userid_writeacp():
 @attr(method='ACLs')
 @attr(operation='set acl w/invalid userid')
 @attr(assertion='fails 400')
+@attr('fails_on_slave_zonegroup')
 def test_bucket_acl_grant_nonexist_user():
     bucket = get_new_bucket()
     # add alt user
@@ -4550,6 +4551,7 @@ def test_bucket_acl_grant_email():
 @attr(method='ACLs')
 @attr(operation='add acl for nonexistent user')
 @attr(assertion='fail 400')
+@attr('fails_on_slave_zonegroup')
 def test_bucket_acl_grant_email_notexist():
     # behavior not documented by amazon
     bucket = get_new_bucket()
@@ -9162,6 +9164,7 @@ def test_bucket_policy_list_bucket_with_delimiter():
 @attr(method='put')
 @attr(operation='Test put bucket acl with canned acl conditionals')
 @attr('bucket-policy')
+@attr('fails_on_slave_zonegroup')
 def test_bucket_policy_list_put_bucket_acl_canned_acl():
     bucket = _create_keys(keys=['key/'+str(i) for i in range(5)])
 
