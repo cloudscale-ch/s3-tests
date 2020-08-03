@@ -124,12 +124,12 @@ def teardown():
     global boto_type
 
     # replace original functionality depending on the boto version
-    if boto_type is 'S3Connection':
+    if boto_type == 'S3Connection':
         global _orig_conn
         for conn in s3:
             s3[conn] = _orig_conn[conn]
         _orig_conn = {}
-    elif boto_type is 'HTTPRequest':
+    elif boto_type == 'HTTPRequest':
         global _orig_authorize
 
         boto.connection.HTTPRequest.authorize = _orig_authorize
