@@ -187,7 +187,7 @@ def _website_expected_default_html(**kwargs):
     fields = []
     for k in list(kwargs.keys()):
         # AmazonS3 seems to be inconsistent, some HTML errors include BucketName, but others do not.
-        if k is 'BucketName':
+        if k == 'BucketName':
             continue
 
         v = kwargs[k]
