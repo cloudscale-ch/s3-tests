@@ -12409,6 +12409,7 @@ def test_object_read_unreadable():
 @attr(operation='Test User Policy')
 @attr(assertion='succeeds')
 @attr('user-policy')
+@attr('fails_on_cloudscale')
 def test_user_policy():
     client = get_tenant_iam_client()
 
