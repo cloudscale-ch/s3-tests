@@ -4346,7 +4346,17 @@ def check_grants(got, want):
     Check that grants list in got matches the dictionaries in want,
     in any order.
     """
+    def sort_key(value):
+        grantee = value.get('Grantee', value)
+        if grantee.get('ID'):
+            return (grantee['ID'], value['Permission'])
+        if grantee.get('URI'):
+            return (grantee['URI'], value['Permission'])
+        return ('', value['Permission'])
+
     eq(len(got), len(want))
+    got = sorted(got, key=sort_key)
+    want = sorted(want, key=sort_key)
     for g, w in zip(got, want):
         w = dict(w)
         g = dict(g)
