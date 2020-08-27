@@ -144,6 +144,8 @@ def test_versioning_obj_read_not_exist_null():
 @pytest.mark.fails_with_subdomain
 @pytest.mark.appendobject
 @pytest.mark.fails_on_dbstore
+# This does not work with v4 sigs as the appended parameters won't be signed
+@pytest.mark.auth_aws2
 def test_append_object():
     bucket = get_new_bucket()
     key = bucket.new_key('foo')
@@ -165,6 +167,8 @@ def test_append_object():
 @pytest.mark.fails_with_subdomain
 @pytest.mark.appendobject
 @pytest.mark.fails_on_dbstore
+# This does not work with v4 sigs as the appended parameters won't be signed
+@pytest.mark.auth_aws2
 def test_append_normal_object():
     bucket = get_new_bucket()
     key = bucket.new_key('foo')
@@ -182,6 +186,8 @@ def test_append_normal_object():
 @pytest.mark.fails_with_subdomain
 @pytest.mark.appendobject
 @pytest.mark.fails_on_dbstore
+# This does not work with v4 sigs as the appended parameters won't be signed
+@pytest.mark.auth_aws2
 def test_append_object_position_wrong():
     bucket = get_new_bucket()
     key = bucket.new_key('foo')
