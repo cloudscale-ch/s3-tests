@@ -1157,11 +1157,11 @@ def routing_check(*args, **kwargs):
     else:
         assert(False)
 
-@attr('s3website_RoutingRules')
-@attr('s3website')
-@nose.with_setup(setup=check_can_test_website, teardown=common.teardown)
-def test_routing_generator():
-    for t in ROUTING_RULES_TESTS:
-        if 'xml' in t and 'RoutingRules' in t['xml'] and len(t['xml']['RoutingRules']) > 0:
-            t['xml']['RoutingRules'] = common.trim_xml(t['xml']['RoutingRules'])
-        yield routing_check, t
+#@attr('s3website_RoutingRules')
+#@attr('s3website')
+#@nose.with_setup(setup=check_can_test_website, teardown=common.teardown)
+#def test_routing_generator():
+#    for t in ROUTING_RULES_TESTS:
+#        if 'xml' in t and 'RoutingRules' in t['xml'] and len(t['xml']['RoutingRules']) > 0:
+#            t['xml']['RoutingRules'] = common.trim_xml(t['xml']['RoutingRules'])
+#        yield routing_check, t
