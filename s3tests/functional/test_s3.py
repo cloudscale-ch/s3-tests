@@ -156,6 +156,8 @@ def test_versioning_obj_read_not_exist_null():
 @attr('fails_on_aws')
 @attr('fails_with_subdomain')
 @attr('appendobject')
+# This does not work with v4 sigs as the appended parameters won't be signed
+@attr('auth_aws2')
 def test_append_object():
     bucket = get_new_bucket()
     key = bucket.new_key('foo')
@@ -180,6 +182,8 @@ def test_append_object():
 @attr('fails_on_aws')
 @attr('fails_with_subdomain')
 @attr('appendobject')
+# This does not work with v4 sigs as the appended parameters won't be signed
+@attr('auth_aws2')
 def test_append_normal_object():
     bucket = get_new_bucket()
     key = bucket.new_key('foo')
@@ -200,6 +204,8 @@ def test_append_normal_object():
 @attr('fails_on_aws')
 @attr('fails_with_subdomain')
 @attr('appendobject')
+# This does not work with v4 sigs as the appended parameters won't be signed
+@attr('auth_aws2')
 def test_append_object_position_wrong():
     bucket = get_new_bucket()
     key = bucket.new_key('foo')
