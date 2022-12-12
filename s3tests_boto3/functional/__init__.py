@@ -169,6 +169,10 @@ def setup():
 
     try:
         config.default_ssl_verify = cfg.getboolean('DEFAULT', "ssl_verify")
+    except ValueError:
+        # Try to read it as string if it does not convert to a boolen. Then
+        # it's the path to a certificate bundle.
+        config.default_ssl_verify = cfg.get('DEFAULT', "ssl_verify")
     except configparser.NoOptionError:
         config.default_ssl_verify = False
 
