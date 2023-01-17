@@ -1305,7 +1305,7 @@ def test_account_usage():
     eq(summary['QuotaMaxBytes'], '-1')
     eq(summary['QuotaMaxBuckets'], '1000')
     eq(summary['QuotaMaxObjCount'], '-1')
-    eq(summary['QuotaMaxBytesPerBucket'], '-1')
+    eq(summary['QuotaMaxBytesPerBucket'], '10000000')
     eq(summary['QuotaMaxObjCountPerBucket'], '-1')
 
 @attr(resource='bucket')
@@ -1327,7 +1327,7 @@ def test_head_bucket_usage():
     eq(hdrs['X-RGW-Quota-User-Objects'], '-1')
     eq(hdrs['X-RGW-Quota-Max-Buckets'], '1000')
     eq(hdrs['X-RGW-Quota-Bucket-Size'], '-1')
-    eq(hdrs['X-RGW-Quota-Bucket-Objects'], '-1')
+    eq(hdrs['X-RGW-Quota-Bucket-Objects'], '10000000')
 
 @attr(resource='bucket')
 @attr(method='get')
