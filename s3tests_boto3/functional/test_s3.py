@@ -1089,7 +1089,7 @@ def test_account_usage():
     assert summary['QuotaMaxBytes'] == '-1'
     assert summary['QuotaMaxBuckets'] == '1000'
     assert summary['QuotaMaxObjCount'] == '-1'
-    assert summary['QuotaMaxBytesPerBucket'] == '-1'
+    assert summary['QuotaMaxBytesPerBucket'] == '10000000'
     assert summary['QuotaMaxObjCountPerBucket'] == '-1'
 
 @pytest.mark.fails_on_aws
@@ -1108,7 +1108,7 @@ def test_head_bucket_usage():
     assert hdrs['X-RGW-Quota-User-Objects'] == '-1'
     assert hdrs['X-RGW-Quota-Max-Buckets'] == '1000'
     assert hdrs['X-RGW-Quota-Bucket-Size'] == '-1'
-    assert hdrs['X-RGW-Quota-Bucket-Objects'] == '-1'
+    assert hdrs['X-RGW-Quota-Bucket-Objects'] == '10000000'
 
 @pytest.mark.fails_on_aws
 @pytest.mark.fails_on_dbstore
