@@ -154,12 +154,14 @@ def _add_custom_headers(headers=None, remove=None):
         _remove_headers.extend(remove)
 
 
-def _setup_bad_object(headers=None, remove=None):
+def _setup_bad_object(headers=None, remove=None, bucket=None):
     """ Create a new bucket, add an object w/header customizations
     """
-    bucket = get_new_bucket()
+
+    bucket = bucket or get_new_bucket()
 
     _add_custom_headers(headers=headers, remove=remove)
+
     return bucket.new_key('foo')
 
 
@@ -220,15 +222,17 @@ def test_object_create_bad_authorization_empty():
 @pytest.mark.auth_common
 @pytest.mark.fails_on_dbstore
 def test_object_create_date_and_amz_date():
+    bucket = get_new_bucket()
     date = _x_amz_date()
-    key = _setup_bad_object({'Date': date, 'X-Amz-Date': date})
+    key = _setup_bad_object({'Date': date, 'X-Amz-Date': date}, bucket=bucket)
     key.set_contents_from_string('bar')
 
 @pytest.mark.auth_common
 @pytest.mark.fails_on_dbstore
 def test_object_create_amz_date_and_no_date():
+    bucket = get_new_bucket()
     date = _x_amz_date()
-    key = _setup_bad_object({'X-Amz-Date': date}, ('Date',))
+    key = _setup_bad_object({'X-Amz-Date': date}, ('Date',), bucket=bucket)
     key.set_contents_from_string('bar')
 
 
