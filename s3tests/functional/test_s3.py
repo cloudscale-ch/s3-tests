@@ -363,7 +363,7 @@ def configured_storage_classes():
     sc = [ 'STANDARD' ]
 
     if 'storage_classes' in config['main']:
-        extra_sc = re.split('\W+', config['main']['storage_classes'])
+        extra_sc = re.split(r'\W+', config['main']['storage_classes'])
 
         for item in extra_sc:
             if item != 'STANDARD':

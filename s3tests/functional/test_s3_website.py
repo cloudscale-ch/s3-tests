@@ -1081,4 +1081,4 @@ def test_routing_generator():
     for t in ROUTING_RULES_TESTS:
         if 'xml' in t and 'RoutingRules' in t['xml'] and len(t['xml']['RoutingRules']) > 0:
             t['xml']['RoutingRules'] = common.trim_xml(t['xml']['RoutingRules'])
-        yield routing_check, t
+        routing_check(t)
