@@ -12,6 +12,7 @@ import socket
 import ssl
 import os
 import re
+from datetime import datetime
 from email.utils import formatdate
 
 from urllib.parse import urlparse
@@ -117,11 +118,11 @@ def hook_headers(setup_teardown):
     yield
 
     # replace original functionality depending on the boto version
-    if boto_type is 'S3Connection':
+    if boto_type == 'S3Connection':
         for conn in s3:
             s3[conn] = _orig_conn[conn]
         _orig_conn = {}
-    elif boto_type is 'HTTPRequest':
+    elif boto_type == 'HTTPRequest':
         boto.connection.HTTPRequest.authorize = _orig_authorize
         _orig_authorize = None
     else:
@@ -153,13 +154,26 @@ def _add_custom_headers(headers=None, remove=None):
         _remove_headers.extend(remove)
 
 
-def _setup_bad_object(headers=None, remove=None):
+def _setup_bad_object(headers=None, remove=None, bucket=None):
     """ Create a new bucket, add an object w/header customizations
     """
-    bucket = get_new_bucket()
+
+    bucket = bucket or get_new_bucket()
 
     _add_custom_headers(headers=headers, remove=remove)
+
     return bucket.new_key('foo')
+
+
+def _x_amz_date():
+    """ The AWS sigv2 and sigv4 algorithms use different date formats. For sigv2
+    the date must be formated according to RFC 2616, for sigv4 it must be in
+    ISO 8601 format.
+    """
+    if 'S3_USE_SIGV4' in os.environ:
+        return datetime.utcnow().strftime('%Y%m%dT%H%M%SZ')
+    else:
+        return formatdate(usegmt=True)
 
 #
 # common tests
@@ -208,15 +222,17 @@ def test_object_create_bad_authorization_empty():
 @pytest.mark.auth_common
 @pytest.mark.fails_on_dbstore
 def test_object_create_date_and_amz_date():
-    date = formatdate(usegmt=True)
-    key = _setup_bad_object({'Date': date, 'X-Amz-Date': date})
+    bucket = get_new_bucket()
+    date = _x_amz_date()
+    key = _setup_bad_object({'Date': date, 'X-Amz-Date': date}, bucket=bucket)
     key.set_contents_from_string('bar')
 
 @pytest.mark.auth_common
 @pytest.mark.fails_on_dbstore
 def test_object_create_amz_date_and_no_date():
-    date = formatdate(usegmt=True)
-    key = _setup_bad_object({'X-Amz-Date': date}, ('Date',))
+    bucket = get_new_bucket()
+    date = _x_amz_date()
+    key = _setup_bad_object({'X-Amz-Date': date}, ('Date',), bucket=bucket)
     key.set_contents_from_string('bar')
 
 
@@ -554,7 +570,7 @@ def test_object_create_bad_amz_date_before_epoch_aws4():
     e = assert_raises(boto.exception.S3ResponseError, key.set_contents_from_string, 'bar')
     assert e.status == 403
     assert e.reason == 'Forbidden'
-    assert e.error_code in ('AccessDenied', 'SignatureDoesNotMatch')
+    assert e.error_code in ('AccessDenied', 'SignatureDoesNotMatch', 'RequestTimeTooSkewed')
 
 
 @pytest.mark.auth_aws4
@@ -764,4 +780,4 @@ def test_bucket_create_bad_amz_date_before_epoch_aws4():
 
     assert e.status == 403
     assert e.reason == 'Forbidden'
-    assert e.error_code in ('AccessDenied', 'SignatureDoesNotMatch')
+    assert e.error_code in ('AccessDenied', 'SignatureDoesNotMatch', 'RequestTimeTooSkewed')

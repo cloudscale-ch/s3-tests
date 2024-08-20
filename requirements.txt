@@ -12,4 +12,5 @@ pytz
 httplib2
 lxml
 pytest
+pytest-timeout
 tox

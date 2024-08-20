@@ -1089,7 +1089,7 @@ def test_account_usage():
     assert summary['QuotaMaxBytes'] == '-1'
     assert summary['QuotaMaxBuckets'] == '1000'
     assert summary['QuotaMaxObjCount'] == '-1'
-    assert summary['QuotaMaxBytesPerBucket'] == '-1'
+    assert summary['QuotaMaxBytesPerBucket'] == '10000000'
     assert summary['QuotaMaxObjCountPerBucket'] == '-1'
 
 @pytest.mark.fails_on_aws
@@ -1108,7 +1108,7 @@ def test_head_bucket_usage():
     assert hdrs['X-RGW-Quota-User-Objects'] == '-1'
     assert hdrs['X-RGW-Quota-Max-Buckets'] == '1000'
     assert hdrs['X-RGW-Quota-Bucket-Size'] == '-1'
-    assert hdrs['X-RGW-Quota-Bucket-Objects'] == '-1'
+    assert hdrs['X-RGW-Quota-Bucket-Objects'] == '10000000'
 
 @pytest.mark.fails_on_aws
 @pytest.mark.fails_on_dbstore
@@ -2163,7 +2163,7 @@ def test_post_object_escaped_field_values():
     policy_document = {"expiration": expires.strftime("%Y-%m-%dT%H:%M:%SZ"),\
     "conditions": [\
     {"bucket": bucket_name},\
-    ["starts-with", "$key", "\$foo"],\
+    ["starts-with", "$key", r"\$foo"],\
     {"acl": "private"},\
     ["starts-with", "$Content-Type", "text/plain"],\
     ["content-length-range", 0, 1024]\
@@ -2178,13 +2178,13 @@ def test_post_object_escaped_field_values():
 
     signature = base64.b64encode(hmac.new(bytes(aws_secret_access_key, 'utf-8'), policy, hashlib.sha1).digest())
 
-    payload = OrderedDict([ ("key" , "\$foo.txt"),("AWSAccessKeyId" , aws_access_key_id),\
+    payload = OrderedDict([ ("key" , r"\$foo.txt"),("AWSAccessKeyId" , aws_access_key_id),\
     ("acl" , "private"),("signature" , signature),("policy" , policy),\
     ("Content-Type" , "text/plain"),('file', ('bar'))])
 
     r = requests.post(url, files=payload, verify=get_config_ssl_verify())
     assert r.status_code == 204
-    response = client.get_object(Bucket=bucket_name, Key='\$foo.txt')
+    response = client.get_object(Bucket=bucket_name, Key=r'\$foo.txt')
     body = _get_body(response)
     assert body == 'bar'
 
@@ -2241,7 +2241,7 @@ def test_post_object_invalid_signature():
     policy_document = {"expiration": expires.strftime("%Y-%m-%dT%H:%M:%SZ"),\
     "conditions": [\
     {"bucket": bucket_name},\
-    ["starts-with", "$key", "\$foo"],\
+    ["starts-with", "$key", r"\$foo"],\
     {"acl": "private"},\
     ["starts-with", "$Content-Type", "text/plain"],\
     ["content-length-range", 0, 1024]\
@@ -2256,7 +2256,7 @@ def test_post_object_invalid_signature():
 
     signature = base64.b64encode(hmac.new(bytes(aws_secret_access_key, 'utf-8'), policy, hashlib.sha1).digest())[::-1]
 
-    payload = OrderedDict([ ("key" , "\$foo.txt"),("AWSAccessKeyId" , aws_access_key_id),\
+    payload = OrderedDict([ ("key" , r"\$foo.txt"),("AWSAccessKeyId" , aws_access_key_id),\
     ("acl" , "private"),("signature" , signature),("policy" , policy),\
     ("Content-Type" , "text/plain"),('file', ('bar'))])
 
@@ -2274,7 +2274,7 @@ def test_post_object_invalid_access_key():
     policy_document = {"expiration": expires.strftime("%Y-%m-%dT%H:%M:%SZ"),\
     "conditions": [\
     {"bucket": bucket_name},\
-    ["starts-with", "$key", "\$foo"],\
+    ["starts-with", "$key", r"\$foo"],\
     {"acl": "private"},\
     ["starts-with", "$Content-Type", "text/plain"],\
     ["content-length-range", 0, 1024]\
@@ -2289,7 +2289,7 @@ def test_post_object_invalid_access_key():
 
     signature = base64.b64encode(hmac.new(bytes(aws_secret_access_key, 'utf-8'), policy, hashlib.sha1).digest())
 
-    payload = OrderedDict([ ("key" , "\$foo.txt"),("AWSAccessKeyId" , aws_access_key_id[::-1]),\
+    payload = OrderedDict([ ("key" , r"\$foo.txt"),("AWSAccessKeyId" , aws_access_key_id[::-1]),\
     ("acl" , "private"),("signature" , signature),("policy" , policy),\
     ("Content-Type" , "text/plain"),('file', ('bar'))])
 
@@ -2307,7 +2307,7 @@ def test_post_object_invalid_date_format():
     policy_document = {"expiration": str(expires),\
     "conditions": [\
     {"bucket": bucket_name},\
-    ["starts-with", "$key", "\$foo"],\
+    ["starts-with", "$key", r"\$foo"],\
     {"acl": "private"},\
     ["starts-with", "$Content-Type", "text/plain"],\
     ["content-length-range", 0, 1024]\
@@ -2322,7 +2322,7 @@ def test_post_object_invalid_date_format():
 
     signature = base64.b64encode(hmac.new(bytes(aws_secret_access_key, 'utf-8'), policy, hashlib.sha1).digest())
 
-    payload = OrderedDict([ ("key" , "\$foo.txt"),("AWSAccessKeyId" , aws_access_key_id),\
+    payload = OrderedDict([ ("key" , r"\$foo.txt"),("AWSAccessKeyId" , aws_access_key_id),\
     ("acl" , "private"),("signature" , signature),("policy" , policy),\
     ("Content-Type" , "text/plain"),('file', ('bar'))])
 
@@ -2372,7 +2372,7 @@ def test_post_object_missing_signature():
     policy_document = {"expiration": expires.strftime("%Y-%m-%dT%H:%M:%SZ"),\
     "conditions": [\
     {"bucket": bucket_name},\
-    ["starts-with", "$key", "\$foo"],\
+    ["starts-with", "$key", r"\$foo"],\
     {"acl": "private"},\
     ["starts-with", "$Content-Type", "text/plain"],\
     ["content-length-range", 0, 1024]\
@@ -2404,7 +2404,7 @@ def test_post_object_missing_policy_condition():
 
     policy_document = {"expiration": expires.strftime("%Y-%m-%dT%H:%M:%SZ"),\
     "conditions": [\
-    ["starts-with", "$key", "\$foo"],\
+    ["starts-with", "$key", r"\$foo"],\
     {"acl": "private"},\
     ["starts-with", "$Content-Type", "text/plain"],\
     ["content-length-range", 0, 1024]\
@@ -4505,6 +4505,7 @@ def test_bucket_acl_grant_userid_writeacp():
     # can write acl
     _check_bucket_acl_grant_can_writeacp(bucket_name)
 
+@pytest.mark.fails_on_slave_zonegroup
 def test_bucket_acl_grant_nonexist_user():
     bucket_name = get_new_bucket()
     client = get_client()
@@ -4723,6 +4724,7 @@ def test_bucket_header_acl_grants():
 # would violate the uniqueness requirement of a user's email. As such, DHO users are
 # created without an email.
 @pytest.mark.fails_on_aws
+@pytest.mark.fails_on_cloudscale
 def test_bucket_acl_grant_email():
     bucket_name = get_new_bucket()
     client = get_client()
@@ -4765,6 +4767,7 @@ def test_bucket_acl_grant_email():
         ]
     )
 
+@pytest.mark.fails_on_slave_zonegroup
 def test_bucket_acl_grant_email_not_exist():
     # behavior not documented by amazon
     bucket_name = get_new_bucket()
@@ -9527,6 +9530,7 @@ def test_encryption_sse_c_post_object_authenticated_request():
     assert body == 'bar'
 
 @pytest.mark.encryption
+@pytest.mark.kms
 @pytest.mark.fails_on_dbstore
 def _test_sse_kms_customer_write(file_size, key_id = 'testkey-1'):
     """
@@ -9556,6 +9560,7 @@ def _test_sse_kms_customer_write(file_size, key_id = 'testkey-1'):
 
 
 @pytest.mark.encryption
+@pytest.mark.kms
 @pytest.mark.fails_on_dbstore
 def test_sse_kms_method_head():
     kms_keyid = get_main_kms_keyid()
@@ -9583,6 +9588,7 @@ def test_sse_kms_method_head():
     assert status == 400
 
 @pytest.mark.encryption
+@pytest.mark.kms
 @pytest.mark.fails_on_dbstore
 def test_sse_kms_present():
     kms_keyid = get_main_kms_keyid()
@@ -9604,6 +9610,7 @@ def test_sse_kms_present():
     assert body == data
 
 @pytest.mark.encryption
+@pytest.mark.kms
 def test_sse_kms_no_key():
     bucket_name = get_new_bucket()
     client = get_client()
@@ -9620,6 +9627,7 @@ def test_sse_kms_no_key():
 
 
 @pytest.mark.encryption
+@pytest.mark.kms
 def test_sse_kms_not_declared():
     bucket_name = get_new_bucket()
     client = get_client()
@@ -9637,6 +9645,7 @@ def test_sse_kms_not_declared():
     assert status == 400
 
 @pytest.mark.encryption
+@pytest.mark.kms
 @pytest.mark.fails_on_dbstore
 def test_sse_kms_multipart_upload():
     kms_keyid = get_main_kms_keyid()
@@ -9684,6 +9693,7 @@ def test_sse_kms_multipart_upload():
 
 
 @pytest.mark.encryption
+@pytest.mark.kms
 @pytest.mark.fails_on_dbstore
 def test_sse_kms_multipart_invalid_chunks_1():
     kms_keyid = get_main_kms_keyid()
@@ -9711,6 +9721,7 @@ def test_sse_kms_multipart_invalid_chunks_1():
 
 
 @pytest.mark.encryption
+@pytest.mark.kms
 @pytest.mark.fails_on_dbstore
 def test_sse_kms_multipart_invalid_chunks_2():
     kms_keyid = get_main_kms_keyid()
@@ -9737,6 +9748,7 @@ def test_sse_kms_multipart_invalid_chunks_2():
 
 
 @pytest.mark.encryption
+@pytest.mark.kms
 @pytest.mark.fails_on_dbstore
 def test_sse_kms_post_object_authenticated_request():
     kms_keyid = get_main_kms_keyid()
@@ -9783,6 +9795,7 @@ def test_sse_kms_post_object_authenticated_request():
     assert body == 'bar'
 
 @pytest.mark.encryption
+@pytest.mark.kms
 @pytest.mark.fails_on_dbstore
 def test_sse_kms_transfer_1b():
     kms_keyid = get_main_kms_keyid()
@@ -9792,6 +9805,7 @@ def test_sse_kms_transfer_1b():
 
 
 @pytest.mark.encryption
+@pytest.mark.kms
 @pytest.mark.fails_on_dbstore
 def test_sse_kms_transfer_1kb():
     kms_keyid = get_main_kms_keyid()
@@ -9801,6 +9815,7 @@ def test_sse_kms_transfer_1kb():
 
 
 @pytest.mark.encryption
+@pytest.mark.kms
 @pytest.mark.fails_on_dbstore
 def test_sse_kms_transfer_1MB():
     kms_keyid = get_main_kms_keyid()
@@ -9810,6 +9825,7 @@ def test_sse_kms_transfer_1MB():
 
 
 @pytest.mark.encryption
+@pytest.mark.kms
 @pytest.mark.fails_on_dbstore
 def test_sse_kms_transfer_13b():
     kms_keyid = get_main_kms_keyid()
@@ -9819,6 +9835,7 @@ def test_sse_kms_transfer_13b():
 
 
 @pytest.mark.encryption
+@pytest.mark.kms
 def test_sse_kms_read_declare():
     bucket_name = get_new_bucket()
     client = get_client()
@@ -11037,6 +11054,7 @@ def test_put_obj_enc_conflict_c_s3():
     assert error_code == 'InvalidArgument'
 
 @pytest.mark.encryption
+@pytest.mark.kms
 def test_put_obj_enc_conflict_c_kms():
     kms_keyid = get_main_kms_keyid()
     if kms_keyid is None:
@@ -11064,6 +11082,7 @@ def test_put_obj_enc_conflict_c_kms():
     assert error_code == 'InvalidArgument'
 
 @pytest.mark.encryption
+@pytest.mark.kms
 def test_put_obj_enc_conflict_s3_kms():
     kms_keyid = get_main_kms_keyid()
     if kms_keyid is None:
@@ -11088,6 +11107,7 @@ def test_put_obj_enc_conflict_s3_kms():
     assert error_code == 'InvalidArgument'
 
 @pytest.mark.encryption
+@pytest.mark.kms
 def test_put_obj_enc_conflict_bad_enc_kms():
     kms_keyid = get_main_kms_keyid()
     if kms_keyid is None:
@@ -11165,6 +11185,7 @@ def test_bucket_policy_put_obj_s3_noenc():
     check_access_denied(client.put_object, Bucket=bucket_name, Key=key1_str, Body=key1_str)
 
 @pytest.mark.encryption
+@pytest.mark.kms
 @pytest.mark.bucket_policy
 @pytest.mark.sse_s3
 def test_bucket_policy_put_obj_s3_kms():
@@ -11211,6 +11232,7 @@ def test_bucket_policy_put_obj_s3_kms():
     check_access_denied(client.put_object, Bucket=bucket_name, Key=key1_str, Body=key1_str)
 
 @pytest.mark.encryption
+@pytest.mark.kms
 @pytest.mark.fails_on_dbstore
 @pytest.mark.bucket_policy
 def test_bucket_policy_put_obj_kms_noenc():
@@ -11259,6 +11281,7 @@ def test_bucket_policy_put_obj_kms_noenc():
 
 @pytest.mark.encryption
 @pytest.mark.bucket_policy
+@pytest.mark.kms
 def test_bucket_policy_put_obj_kms_s3():
     bucket_name = get_new_bucket()
     client = get_v2_client()
@@ -12424,6 +12447,7 @@ def test_put_bucket_encryption_s3():
     _put_bucket_encryption_s3(client, bucket_name)
 
 @pytest.mark.encryption
+@pytest.mark.kms
 def test_put_bucket_encryption_kms():
     bucket_name = get_new_bucket()
     client = get_client()
@@ -12451,6 +12475,7 @@ def test_get_bucket_encryption_s3():
 
 
 @pytest.mark.encryption
+@pytest.mark.kms
 def test_get_bucket_encryption_kms():
     kms_keyid = get_main_kms_keyid()
     if kms_keyid is None:
@@ -12497,6 +12522,7 @@ def test_delete_bucket_encryption_s3():
 
 
 @pytest.mark.encryption
+@pytest.mark.kms
 def test_delete_bucket_encryption_kms():
     bucket_name = get_new_bucket()
     client = get_client()
@@ -12589,6 +12615,7 @@ def _test_sse_kms_default_upload(file_size):
     assert body == data
 
 @pytest.mark.encryption
+@pytest.mark.kms
 @pytest.mark.bucket_encryption
 @pytest.mark.sse_s3
 @pytest.mark.fails_on_dbstore
@@ -12596,6 +12623,7 @@ def test_sse_kms_default_upload_1b():
     _test_sse_kms_default_upload(1)
 
 @pytest.mark.encryption
+@pytest.mark.kms
 @pytest.mark.bucket_encryption
 @pytest.mark.sse_s3
 @pytest.mark.fails_on_dbstore
@@ -12603,6 +12631,7 @@ def test_sse_kms_default_upload_1kb():
     _test_sse_kms_default_upload(1024)
 
 @pytest.mark.encryption
+@pytest.mark.kms
 @pytest.mark.bucket_encryption
 @pytest.mark.sse_s3
 @pytest.mark.fails_on_dbstore
@@ -12610,6 +12639,7 @@ def test_sse_kms_default_upload_1mb():
     _test_sse_kms_default_upload(1024*1024)
 
 @pytest.mark.encryption
+@pytest.mark.kms
 @pytest.mark.bucket_encryption
 @pytest.mark.sse_s3
 @pytest.mark.fails_on_dbstore
@@ -12737,6 +12767,7 @@ def test_sse_s3_default_post_object_authenticated_request():
     assert body == 'bar'
 
 @pytest.mark.encryption
+@pytest.mark.kms
 @pytest.mark.bucket_encryption
 @pytest.mark.fails_on_dbstore
 def test_sse_kms_default_post_object_authenticated_request():

@@ -81,7 +81,7 @@ def _create_keys(bucket=None, keys=[]):
 
 
 def _get_alt_connection():
-    return boto.s3.connection.S3Connection(
+    conn = boto.s3.connection.S3Connection(
         aws_access_key_id=s3['alt'].aws_access_key_id,
         aws_secret_access_key=s3['alt'].aws_secret_access_key,
         is_secure=s3['alt'].is_secure,
@@ -89,7 +89,8 @@ def _get_alt_connection():
         host=s3['alt'].host,
         calling_format=s3['alt'].calling_format,
     )
-
+    conn.auth_region_name=s3['alt'].auth_region_name
+    return conn
 
 # Breaks DNS with SubdomainCallingFormat
 @pytest.mark.fails_with_subdomain
@@ -143,6 +144,8 @@ def test_versioning_obj_read_not_exist_null():
 @pytest.mark.fails_with_subdomain
 @pytest.mark.appendobject
 @pytest.mark.fails_on_dbstore
+# This does not work with v4 sigs as the appended parameters won't be signed
+@pytest.mark.auth_aws2
 def test_append_object():
     bucket = get_new_bucket()
     key = bucket.new_key('foo')
@@ -164,6 +167,8 @@ def test_append_object():
 @pytest.mark.fails_with_subdomain
 @pytest.mark.appendobject
 @pytest.mark.fails_on_dbstore
+# This does not work with v4 sigs as the appended parameters won't be signed
+@pytest.mark.auth_aws2
 def test_append_normal_object():
     bucket = get_new_bucket()
     key = bucket.new_key('foo')
@@ -181,6 +186,8 @@ def test_append_normal_object():
 @pytest.mark.fails_with_subdomain
 @pytest.mark.appendobject
 @pytest.mark.fails_on_dbstore
+# This does not work with v4 sigs as the appended parameters won't be signed
+@pytest.mark.auth_aws2
 def test_append_object_position_wrong():
     bucket = get_new_bucket()
     key = bucket.new_key('foo')
@@ -356,7 +363,7 @@ def configured_storage_classes():
     sc = [ 'STANDARD' ]
 
     if 'storage_classes' in config['main']:
-        extra_sc = re.split('\W+', config['main']['storage_classes'])
+        extra_sc = re.split(r'\W+', config['main']['storage_classes'])
 
         for item in extra_sc:
             if item != 'STANDARD':
@@ -622,6 +629,7 @@ def _multipart_upload_enc(bucket, s3_key_name, size, part_size=5*1024*1024,
 
 @pytest.mark.encryption
 @pytest.mark.fails_on_dbstore
+@pytest.mark.aws4_boto_header_ordering_bug
 def test_encryption_sse_c_multipart_invalid_chunks_1():
     bucket = get_new_bucket()
     key = "multipart_enc"
@@ -646,6 +654,7 @@ def test_encryption_sse_c_multipart_invalid_chunks_1():
 
 @pytest.mark.encryption
 @pytest.mark.fails_on_dbstore
+@pytest.mark.aws4_boto_header_ordering_bug
 def test_encryption_sse_c_multipart_invalid_chunks_2():
     bucket = get_new_bucket()
     key = "multipart_enc"
@@ -671,6 +680,7 @@ def test_encryption_sse_c_multipart_invalid_chunks_2():
 @pytest.mark.fails_with_subdomain
 @pytest.mark.bucket_policy
 @pytest.mark.fails_on_dbstore
+@pytest.mark.tenants
 def test_bucket_policy_different_tenant():
     bucket = get_new_bucket()
     key = bucket.new_key('asdf')
