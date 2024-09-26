@@ -1094,6 +1094,7 @@ def test_account_usage():
 
 @pytest.mark.fails_on_aws
 @pytest.mark.fails_on_dbstore
+@pytest.mark.fails_on_cloudscale
 def test_head_bucket_usage():
     # boto3.set_stream_logger(name='botocore')
     client = get_client()
