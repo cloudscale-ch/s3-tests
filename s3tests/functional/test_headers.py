@@ -185,9 +185,14 @@ def test_object_create_bad_contentlength_none():
     key = _setup_bad_object(remove=('Content-Length',))
 
     e = assert_raises(boto.exception.S3ResponseError, key.set_contents_from_string, 'bar')
-    assert e.status == 411
-    assert e.reason == 'Length Required'
-    assert e.error_code == 'MissingContentLength'
+    if 'S3_USE_SIGV4' in os.environ:
+        assert e.status == 400
+        assert e.reason == 'Bad Request'
+        assert e.error_code == 'XAmzContentSHA256Mismatch'
+    else:
+        assert e.status == 411
+        assert e.reason == 'Length Required'
+        assert e.error_code == 'MissingContentLength'
 
 
 @pytest.mark.auth_common
