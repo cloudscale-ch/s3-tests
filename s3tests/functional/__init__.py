@@ -82,18 +82,22 @@ def get_objects_list(bucket, client=None, prefix=None):
 # generator function that returns object listings in batches, where each
 # batch is a list of dicts compatible with delete_objects()
 def list_versions(client, bucket, batch_size):
-    kwargs = {'Bucket': bucket, 'MaxKeys': batch_size}
-    truncated = True
-    while truncated:
-        listing = client.list_object_versions(**kwargs)
+    try:
+        kwargs = {'Bucket': bucket, 'MaxKeys': batch_size}
+        truncated = True
+        while truncated:
+            listing = client.list_object_versions(**kwargs)
 
-        kwargs['KeyMarker'] = listing.get('NextKeyMarker')
-        kwargs['VersionIdMarker'] = listing.get('NextVersionIdMarker')
-        truncated = listing['IsTruncated']
+            kwargs['KeyMarker'] = listing.get('NextKeyMarker')
+            kwargs['VersionIdMarker'] = listing.get('NextVersionIdMarker')
+            truncated = listing['IsTruncated']
 
-        objs = listing.get('Versions', []) + listing.get('DeleteMarkers', [])
-        if len(objs):
-            yield [{'Key': o['Key'], 'VersionId': o['VersionId']} for o in objs]
+            objs = listing.get('Versions', []) + listing.get('DeleteMarkers', [])
+            if len(objs):
+                yield [{'Key': o['Key'], 'VersionId': o['VersionId']} for o in objs]
+    except ClientError:
+        # Ignore brocken buckets
+        yield []
 
 def nuke_bucket(client, bucket):
     batch_size = 128
@@ -101,22 +105,27 @@ def nuke_bucket(client, bucket):
 
     # list and delete objects in batches
     for objects in list_versions(client, bucket, batch_size):
-        delete = client.delete_objects(Bucket=bucket,
-                Delete={'Objects': objects, 'Quiet': True},
-                BypassGovernanceRetention=True)
+        try:
+            delete = client.delete_objects(Bucket=bucket,
+                    Delete={'Objects': objects, 'Quiet': True},
+                    BypassGovernanceRetention=True)
+        except ClientError:
+            delete = None
+            pass
 
         # check for object locks on 403 AccessDenied errors
-        for err in delete.get('Errors', []):
-            if err.get('Code') != 'AccessDenied':
-                continue
-            try:
-                res = client.get_object_retention(Bucket=bucket,
-                        Key=err['Key'], VersionId=err['VersionId'])
-                retain_date = res['Retention']['RetainUntilDate']
-                if not max_retain_date or max_retain_date < retain_date:
-                    max_retain_date = retain_date
-            except ClientError:
-                pass
+        if delete:
+            for err in delete.get('Errors', []):
+                if err.get('Code') != 'AccessDenied':
+                    continue
+                try:
+                    res = client.get_object_retention(Bucket=bucket,
+                            Key=err['Key'], VersionId=err['VersionId'])
+                    retain_date = res['Retention']['RetainUntilDate']
+                    if not max_retain_date or max_retain_date < retain_date:
+                        max_retain_date = retain_date
+                except ClientError:
+                    pass
 
     if max_retain_date:
         # wait out the retention period (up to 60 seconds)
@@ -132,11 +141,17 @@ bucket cleanup'.format(bucket, delta.total_seconds()))
             time.sleep(delta.total_seconds())
 
         for objects in list_versions(client, bucket, batch_size):
-            client.delete_objects(Bucket=bucket,
-                    Delete={'Objects': objects, 'Quiet': True},
-                    BypassGovernanceRetention=True)
+            try:
+                client.delete_objects(Bucket=bucket,
+                        Delete={'Objects': objects, 'Quiet': True},
+                        BypassGovernanceRetention=True)
+            except ClientError:
+                pass
 
-    client.delete_bucket(Bucket=bucket)
+    try:
+        client.delete_bucket(Bucket=bucket)
+    except ClientError:
+        pass
 
 def nuke_prefixed_buckets(prefix, client=None):
     if client == None:
