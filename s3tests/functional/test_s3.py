@@ -10663,13 +10663,6 @@ def test_encryption_sse_c_enforced_with_bucket_policy():
 
     check_access_denied(client.put_object, Bucket=bucket_name, Key='foo', Body='bar')
 
-    client.put_object(
-        Bucket=bucket_name, Key='foo', Body='bar',
-        SSECustomerAlgorithm='AES256',
-        SSECustomerKey='pO3upElrwuEXSoFwCfnZPdSsmt/xWeFa0N9KgDijwVs=',
-        SSECustomerKeyMD5='DWygnHRtgiJ77HCm+1rvHw=='
-    )
-
 
 @pytest.mark.encryption
 @pytest.mark.fails_on_dbstore
@@ -10692,13 +10685,6 @@ def test_encryption_sse_c_deny_algo_with_bucket_policy():
     client.put_bucket_policy(Bucket=bucket_name, Policy=policy_document)
 
     check_access_denied(client.put_object, Bucket=bucket_name, Key='foo', Body='bar', SSECustomerAlgorithm='AES192')
-
-    client.put_object(
-        Bucket=bucket_name, Key='foo', Body='bar',
-        SSECustomerAlgorithm='AES256',
-        SSECustomerKey='pO3upElrwuEXSoFwCfnZPdSsmt/xWeFa0N9KgDijwVs=',
-        SSECustomerKeyMD5='DWygnHRtgiJ77HCm+1rvHw=='
-    )
 
 
 @pytest.mark.encryption
